@@ -83,14 +83,14 @@ HTMLWidgets.widget({
       .attr('dy', '.35em')
       .attr('x', function(d) {
         // Scale padding for label to the size of node
-        var padding = (d.data.SizeOfNode || 10) + 3
+        var padding = (adjustNodeSize(d.data.SizeOfNode) || 10) + 3
         return d.children || d._children ? -1 * padding : padding;
       })
       .attr('text-anchor', function(d) {
         return d.children || d._children ? 'end' : 'start';
       })
       .style('font-size', options.fontSize + 'px')
-      .text(function(d) { return d.data.name+" : "+ (d.data.SizeOfNode || 10); });
+      .text(function(d) { return d.data.name+" : "+ (d.data.WeightOfNode || 10); });
 
       // UPDATE
       var nodeUpdate = nodeEnter.merge(node);
@@ -105,7 +105,7 @@ HTMLWidgets.widget({
       // Update the node attributes and style
       nodeUpdate.select('circle.node')
       .attr('r', function(d) {
-        return d.data.SizeOfNode || 10; // default radius is 10
+        return adjustNodeSize(d.data.SizeOfNode) || 10; // default radius is 10
       })
       .style('fill', function(d) {
         return d.data.fill || (d._children ? options.fill : '#fff');
@@ -307,9 +307,14 @@ HTMLWidgets.widget({
   }
 });
 
+function adjustNodeSize(nsize){
+  return Math.round(Math.pow((Math.log(nsize)/Math.log(2)),2))
+}
+
 function separationFun(a, b) {
-  var height = a.data.SizeOfNode + b.data.SizeOfNode,
+  var height = adjustNodeSize(a.data.SizeOfNode) + adjustNodeSize(b.data.SizeOfNode),
+
   // Scale distance to SizeOfNode, if defined
-  distance = (height || 20) / 10;
+    distance = (height || 20) / 60;
   return (a.parent === b.parent ? 1 : distance);
 };
