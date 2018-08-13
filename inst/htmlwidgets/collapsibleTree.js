@@ -41,7 +41,7 @@ HTMLWidgets.widget({
       links = treeData.descendants().slice(1);
 
       // Normalize for fixed-depth.
-      nodes.forEach(function(d) {d.y = d.depth * options.linkLength});
+      nodes.forEach(function(d) {debugger; d.y = (d.children ? d.children.length*10 : 0) + (d.depth * (options.linkLength*2))});
 
       // ****************** Nodes section ***************************
 
@@ -84,7 +84,12 @@ HTMLWidgets.widget({
       .attr('x', function(d) {
         // Scale padding for label to the size of node
         var padding = (adjustNodeSize(d.data.SizeOfNode) || 10) + 3
-        return d.children || d._children ? -1 * padding : padding;
+
+        if ( adjustNodeSize(d.data.SizeOfNode) > 30 ){
+          return ( -1 * adjustNodeSize(d.data.SizeOfNode) ) + 10
+        } else {
+          return d.children || d._children ? -1 * padding : padding;
+        }
       })
       .attr('text-anchor', function(d) {
         return d.children || d._children ? 'end' : 'start';
@@ -99,6 +104,7 @@ HTMLWidgets.widget({
       nodeUpdate.transition()
       .duration(duration)
       .attr('transform', function(d) {
+        debugger
         return 'translate(' + d.y + ',' + d.x + ')';
       });
 
