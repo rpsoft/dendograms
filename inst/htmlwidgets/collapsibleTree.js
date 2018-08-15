@@ -41,7 +41,18 @@ HTMLWidgets.widget({
       links = treeData.descendants().slice(1);
 
       // Normalize for fixed-depth.
-      nodes.forEach(function(d) {debugger; d.y = (d.children ? d.children.length*10 : 0) + (d.depth * (options.linkLength*2))});
+      nodes.forEach(function(d,i) {
+                            // debugger;
+
+                            d.y = (d.parent ? d.parent.y : 0)
+                            + ( (i % 2 == 0) && d.children ? + 40 : 0)
+                            + (d.children ? d.children.length*10 : 0)
+                            + (options.linkLength*2);
+
+                            d.y = i == 0 ? 50 : d.y; // This one ensures the root is near the margin
+
+                            d.x = d.x * ( Math.tanh(0.05* (nodes.length-30 ) )+2) // Make height a bit more compact?
+                          });
 
       // ****************** Nodes section ***************************
 
@@ -85,11 +96,11 @@ HTMLWidgets.widget({
         // Scale padding for label to the size of node
         var padding = (adjustNodeSize(d.data.SizeOfNode) || 10) + 3
 
-        if ( adjustNodeSize(d.data.SizeOfNode) > 30 ){
-          return ( -1 * adjustNodeSize(d.data.SizeOfNode) ) + 10
-        } else {
+        // if ( adjustNodeSize(d.data.SizeOfNode) > 30 ){
+        //   return ( -1 * adjustNodeSize(d.data.SizeOfNode) ) + 10
+        // } else {
           return d.children || d._children ? -1 * padding : padding;
-        }
+        // }
       })
       .attr('text-anchor', function(d) {
         return d.children || d._children ? 'end' : 'start';
@@ -104,7 +115,7 @@ HTMLWidgets.widget({
       nodeUpdate.transition()
       .duration(duration)
       .attr('transform', function(d) {
-        debugger
+        // debugger
         return 'translate(' + d.y + ',' + d.x + ')';
       });
 
