@@ -31,6 +31,9 @@ HTMLWidgets.widget({
     .attr('class', 'tooltip')
     .style('opacity', 0);
 
+    // Get the root value, for percentage calculations
+    function getTotal (d){ if ( d.parent == null ) { return parseFloat(d.data.WeightOfNode.replace(",","")) } else { return getTotal(d.parent) }   }
+
     function update(source) {
 
       // Assigns the x and y position for the nodes
@@ -106,7 +109,10 @@ HTMLWidgets.widget({
         return d.children || d._children ? 'end' : 'start';
       })
       .style('font-size', options.fontSize + 'px')
-      .text(function(d) { return d.data.name+" : "+ (d.data.WeightOfNode || 10); });
+      .text(function(d) { return d.data.name+" : "+ (d.data.WeightOfNode || 10)
+                                  +" ("
+                                  + ((parseFloat(d.data.WeightOfNode.replace(",",""))/getTotal(d))*100).toFixed(2)
+                                  +"%)"; });
 
       // UPDATE
       var nodeUpdate = nodeEnter.merge(node);
